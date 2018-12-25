@@ -1,0 +1,251 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title></title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+  <script
+    type="text/javascript"
+    src="//code.jquery.com/jquery-git.js"
+    
+  ></script>
+
+    <link rel="stylesheet" type="text/css" href="/css/result-light.css">
+
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
+
+  <style id="compiled-css" type="text/css">
+      @import url("https://fonts.googleapis.com/css?family=Roboto:200,400,500,700");
+@import url("https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css");
+body {
+  padding: 0;
+  margin: 0;
+  font: normal normal 16px/1.2 Roboto, Arial, sans-serif; }
+
+#input {
+  background: #333;
+  padding: 16px 32px;
+  color: #fff;
+  outline: none; }
+  #input:before {
+    content: "Enter a word...";
+    pointer-events: none;
+    color: #ccc; }
+  #input:focus:before, #input:not(:empty):before {
+    content: ""; }
+  #input #input-placeholder {
+    color: #ccc;
+    pointer-events: none;
+    position: absolute; }
+
+#output .word {
+  display: grid;
+  grid-template-columns: 8fr 1fr 1fr;
+  padding: 8px 16px;
+  margin: 8px 0; }
+  #output .word .word-remove span {
+    display: inline-block;
+    padding: 0 6px;
+    font-size: 1.2em;
+    border: 1px solid transparent;
+    margin-top: -2px;
+    border-radius: 4px;
+    cursor: pointer; }
+    #output .word .word-remove span:hover {
+      color: #c00;
+      border-color: #c00; }
+    #output .word .word-points,
+    #output .word .word-remove {
+      user-select: none;
+    }
+
+#buttons {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 50px;
+  align-items: center;
+  display: flex;
+  padding: 0 8px; }
+  #buttons #points_btn {
+    padding: 8px 16px;
+    color: #fff;
+    display: inline-block; }
+  #buttons #done_btn {
+    background: #ADD8E6;
+    color: #333;
+    border: none;
+    font: inherit;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer; }
+#wrapper {
+  width: 460px;
+  max-width: 100%;
+  margin: 0 auto;
+  position: relative;
+} 
+  </style>
+
+
+  
+</head>
+<body>
+  <div id="wrapper">
+    <div id="input" contenteditable></div>
+<div id="output"></div>
+<div id="buttons">
+  <span id="points_btn">
+    
+  </span>
+  <button id="done_btn">
+    Done
+  </button>
+</div>
+</div>
+
+  <!-- TODO: Missing CoffeeScript 2 -->
+
+  <script type="text/javascript">
+
+
+    
+String.prototype.ucfirst = function() {
+  return this.slice(0, 1).toUpperCase() + this.slice(1);
+}
+
+const xsort = (a, b) => {
+  return a.text.length - b.text.length || a.text.localeCompare(b.text);
+}
+const getPoints = word => {
+  let r = false,
+    l = word.length;
+  switch (word.length) {
+    case 4:
+      r = 2;
+      break;
+    case 5:
+      r = 3;
+      break;
+    case 6:
+      r = 5;
+      break;
+    case 7:
+      r = 7;
+      break;
+    case 8:
+      r = 9;
+      break;
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+      r = 12;
+      break;
+    default:
+      r = false;
+      break;
+  }
+  return r;
+}
+const handleChange = (e) => {
+  if (e.key == "Enter") {
+    e.preventDefault();
+    addWord(e.target);
+  }
+}
+const addWord = el => {
+  let value = el.innerHTML;
+  if (value.length < 4) {
+    toastr.error("Words must be at least 4 letters.");
+  } else {
+    let same = false;
+    let word = {
+      text: value,
+      points: getPoints(value)
+    };
+    Words.forEach(function(w){
+      if(w.text.toLowerCase() == word.text.toLowerCase()){
+        same = true;
+      }
+    });
+    if(!same){
+      Words.push(word);
+      Entry.innerHTML = '';
+      generateList();
+    } else {
+      toastr.error("That word has already been entered.");
+    }
+  }
+}
+const generateList = () => {
+  Words.sort(xsort);
+  Output.innerHTML = '';
+  let total_points = 0;
+  Words.forEach(function(word, i) {
+    let text = word.text.ucfirst();
+    let points = word.points;
+    total_points += points;
+    let template = `
+      <div class='word' id='word-${i}'>
+        <div class='word-text'>
+          ${text}
+        </div>
+        <div class='word-points'>
+          ${points}
+        </div>
+        <div class="word-remove">
+          <span onclick='removeWord(this)'>&times;</span>
+        </div>
+      </div>
+    `;
+    Output.innerHTML += template;
+  });
+  PointsBtn.innerHTML = total_points;
+}
+const removeWord = el => {
+  let w = el.parentNode;
+  let id = w.id.replace('word-', '');
+  Words.splice(id, 1);
+  generateList();
+  Entry.focus();
+}
+
+const Entry = document.getElementById('input');
+const Output = document.getElementById('output');
+const DoneBtn = document.getElementById('done_btn');
+const PointsBtn = document.getElementById('points_btn');
+
+let Words = [];
+let total_points = 0;
+
+Entry.addEventListener('keydown', handleChange);
+
+toastr.options = {
+  "positionClass": "toast-bottom-center",
+  "timeOut": 1500
+}
+
+
+
+</script>
+
+  <script>
+    // tell the embed parent frame the height of the content
+    if (window.parent && window.parent.parent){
+      window.parent.parent.postMessage(["resultsFrame", {
+        height: document.body.getBoundingClientRect().height,
+        slug: "3yjr8v7q"
+      }], "*")
+    }
+  </script>
+</body>
+</html>

@@ -214,7 +214,7 @@ const generateList = () => {
 const removeWord = el => {
   let w = el.parentNode;
   let id = w.id.replace('word-', '');
-  Words.splice(id, 1);
+  Words.splice(id + 1, 1);
   generateList();
   Entry.focus();
 }

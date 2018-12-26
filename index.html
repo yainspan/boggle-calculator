@@ -1,13 +1,9 @@
-
 <!DOCTYPE html>
 <html>
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  <title></title>
+  <title>Boggle Calculator</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  <meta name="robots" content="noindex, nofollow">
-  <meta name="googlebot" content="noindex, nofollow">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   
 
   <script
@@ -15,8 +11,6 @@
     src="//code.jquery.com/jquery-git.js"
     
   ></script>
-
-    <link rel="stylesheet" type="text/css" href="/css/result-light.css">
 
       <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
 
@@ -27,7 +21,6 @@ body {
   padding: 0;
   margin: 0;
   font: normal normal 16px/1.2 Roboto, Arial, sans-serif; }
-
 #input {
   background: #333;
   padding: 16px 32px;
@@ -43,7 +36,6 @@ body {
     color: #ccc;
     pointer-events: none;
     position: absolute; }
-
 #output .word {
   display: grid;
   grid-template-columns: 8fr 1fr 1fr;
@@ -64,7 +56,6 @@ body {
     #output .word .word-remove {
       user-select: none;
     }
-
 #buttons {
   position: absolute;
   top: 0;
@@ -113,13 +104,10 @@ body {
   <!-- TODO: Missing CoffeeScript 2 -->
 
   <script type="text/javascript">
-
-
     
 String.prototype.ucfirst = function() {
   return this.slice(0, 1).toUpperCase() + this.slice(1);
 }
-
 const xsort = (a, b) => {
   return a.text.length - b.text.length || a.text.localeCompare(b.text);
 }
@@ -212,40 +200,23 @@ const generateList = () => {
   PointsBtn.innerHTML = total_points;
 }
 const removeWord = el => {
-  let w = el.parentNode;
+  let w = el.parentNode.parentNode;
   let id = w.id.replace('word-', '');
-  Words.splice(id + 1, 1);
+  Words.splice(id, 1);
   generateList();
   Entry.focus();
 }
-
 const Entry = document.getElementById('input');
 const Output = document.getElementById('output');
 const DoneBtn = document.getElementById('done_btn');
 const PointsBtn = document.getElementById('points_btn');
-
 let Words = [];
 let total_points = 0;
-
 Entry.addEventListener('keydown', handleChange);
-
 toastr.options = {
   "positionClass": "toast-bottom-center",
   "timeOut": 1500
 }
-
-
-
 </script>
-
-  <script>
-    // tell the embed parent frame the height of the content
-    if (window.parent && window.parent.parent){
-      window.parent.parent.postMessage(["resultsFrame", {
-        height: document.body.getBoundingClientRect().height,
-        slug: "3yjr8v7q"
-      }], "*")
-    }
-  </script>
 </body>
 </html>
